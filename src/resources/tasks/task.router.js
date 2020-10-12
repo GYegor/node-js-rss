@@ -51,7 +51,6 @@ router
   .delete(async (req, res) => {
     await tasksService.removeFromBoard(req.params.boardId, req.params.id);
     res.sendStatus(204);
-    throw new Error('Task not found');
   });
 
 module.exports = router;
