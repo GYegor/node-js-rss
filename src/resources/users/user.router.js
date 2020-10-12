@@ -14,10 +14,8 @@ router
     res.json(users.map(User.toResponse));
   })
   .post(async (req, res) => {
-    const users = await usersService.getAll();
-    const newUser = new User(req.body);
-    users.push(newUser);
-    res.json({ id: newUser.id });
+    const user = await usersService.add(req.body);
+    res.json(User.toResponse(user));
   });
 
 router
@@ -27,11 +25,12 @@ router
     res.json(User.toResponse(user));
   })
   .put(async (req, res) => {
-    const id = await usersService.update(req.id, req.body);
-    res.json({ id });
+    const updatedUser = await usersService.update(req.id, req.body);
+    res.json(User.toResponse(updatedUser));
   })
   .delete(async (req, res) => {
-    await usersService.remove(req.id);
+    const deletedUserId = await usersService.remove(req.id);
+    await usersService.clearDeletedUserTaskRef(deletedUserId);
     res.sendStatus(204);
   });
 
