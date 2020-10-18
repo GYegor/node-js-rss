@@ -1,38 +1,28 @@
-const db = require('../../db/inMemoryDB');
+const DB = require('../../db/inMemoryDB');
 const User = require('./user.model');
 
 const getAll = async () => {
-  return db.users;
+  return DB.getAllItems('users');
 };
 
 const getById = async id => {
-  const user = await db.users.find(u => u.id === id);
-  if (!user) {
-    throw new Error('User not found');
-  }
+  const user = DB.getItem('users', id);
   return user;
 };
 
-const add = async body => {
+const create = async body => {
   const newUser = new User(body);
-  db.users.push(newUser);
-  return newUser;
+  return DB.addItem('users', newUser);
 };
 
 const update = async (id, body) => {
-  const user = await db.users.find(u => u.id === id);
-  if (!user) {
-    throw new Error('User not found');
-  }
-  Object.assign(user, body);
+  const user = DB.updateItem('users', id, body);
   return user;
 };
 
 const remove = async id => {
-  const userIndex = await db.users.findIndex(user => user.id === id);
-
-  const [deletedUser] = db.users.splice(userIndex, 1);
-  return deletedUser.id;
+  const isRemoved = DB.removeItem('users', id);
+  return isRemoved;
 };
 
-module.exports = { getAll, getById, add, update, remove };
+module.exports = { getAll, getById, create, update, remove };

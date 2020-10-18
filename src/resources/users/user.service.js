@@ -3,16 +3,17 @@ const tasksService = require('../tasks/task.service');
 
 const getAll = () => usersRepo.getAll();
 const getById = id => usersRepo.getById(id);
-const add = reqBody => usersRepo.add(reqBody);
+const create = reqBody => usersRepo.create(reqBody);
 const update = (id, reqBody) => usersRepo.update(id, reqBody);
-const remove = id => usersRepo.remove(id);
-const clearDeletedUserTaskRef = id => tasksService.clearUserTaskRef(id);
+const remove = async id => {
+  await tasksService.clearUserTaskRef(id);
+  return await usersRepo.remove(id);
+};
 
 module.exports = {
   getAll,
   getById,
-  add,
+  create,
   update,
-  remove,
-  clearDeletedUserTaskRef
+  remove
 };

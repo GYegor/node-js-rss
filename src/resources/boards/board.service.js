@@ -3,16 +3,17 @@ const tasksService = require('../tasks/task.service');
 
 const getAll = () => boardsRepo.getAll();
 const getById = id => boardsRepo.getById(id);
-const add = reqBody => boardsRepo.add(reqBody);
+const create = reqBody => boardsRepo.create(reqBody);
 const update = (id, reqBody) => boardsRepo.update(id, reqBody);
-const remove = id => boardsRepo.remove(id);
-const clearBoardTasks = id => tasksService.clearBoardTasks(id);
+const remove = async id => {
+  await tasksService.clearBoardTasks(id);
+  return await boardsRepo.remove(id);
+};
 
 module.exports = {
   getAll,
   getById,
-  add,
+  create,
   update,
-  remove,
-  clearBoardTasks
+  remove
 };
