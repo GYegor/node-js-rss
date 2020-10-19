@@ -1,11 +1,14 @@
-const { INTERNAL_SERVER_ERROR } = require('http-status-codes');
+const { INTERNAL_SERVER_ERROR, ReasonPhrases } = require('http-status-codes');
+const { logger } = require('../middlewares/logger');
 
 const errorHandler = (err, req, res, next) => {
   if (err) {
-    res.status(INTERNAL_SERVER_ERROR).send('Internal server error');
+    logger.error(
+      `${INTERNAL_SERVER_ERROR} ${ReasonPhrases.INTERNAL_SERVER_ERROR}: ${err.message}`
+    );
+    res.status(INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR);
   }
-
-  next();
+  next(err);
 };
 
 module.exports = errorHandler;
