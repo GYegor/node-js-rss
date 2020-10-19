@@ -2,13 +2,12 @@ const router = require('express').Router();
 const { catchError } = require('../../utils');
 const User = require('./user.model');
 const usersService = require('./user.service');
-const { OK, NOT_FOUND, NO_CONTENT } = require('http-status-codes');
-
-// router.param('id', (req, res, next, id) => {
-//   req.params.id = id;
-
-//   next();
-// });
+const {
+  OK,
+  NOT_FOUND,
+  NO_CONTENT,
+  ReasonPhrases
+} = require('http-status-codes');
 
 router
   .route('/')
@@ -33,7 +32,7 @@ router
       if (user) {
         res.status(OK).json(User.toResponse(user));
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`User ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -44,7 +43,7 @@ router
         const user = await usersService.update(req.params.id, req.body);
         res.status(OK).json(User.toResponse(user));
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`User ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -54,10 +53,10 @@ router
       if (userToDelete) {
         const userRemoved = await usersService.remove(req.params.id);
         if (userRemoved) {
-          res.status(NO_CONTENT).send('User was deleted');
+          res.status(NO_CONTENT).send('User Was Deleted');
         }
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`User ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   );

@@ -22,6 +22,9 @@ const getAllItems = tableName => {
 
 const getItem = (tableName, id) => {
   const items = db[tableName].filter(item => item.id === id);
+  if (items.length > 1) {
+    throw Error('DB inconsistency');
+  }
   return items[0];
 };
 

@@ -1,7 +1,12 @@
 const router = require('express').Router();
 const { catchError } = require('../../utils');
+const {
+  OK,
+  NOT_FOUND,
+  NO_CONTENT,
+  ReasonPhrases
+} = require('http-status-codes');
 const boardsService = require('./board.service');
-const { OK, NOT_FOUND, NO_CONTENT } = require('http-status-codes');
 
 router
   .route('/')
@@ -26,7 +31,7 @@ router
       if (board) {
         res.status(OK).json(board);
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -37,7 +42,7 @@ router
         const board = await boardsService.update(req.params.id, req.body);
         res.status(OK).json(board);
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -47,10 +52,10 @@ router
       if (boardToDelete) {
         const boardRemoved = await boardsService.remove(req.params.id);
         if (boardRemoved) {
-          res.status(NO_CONTENT).send('User was deleted');
+          res.status(NO_CONTENT).send('Board Was Deleted');
         }
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   );

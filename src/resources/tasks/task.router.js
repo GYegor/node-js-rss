@@ -1,7 +1,12 @@
 const router = require('express').Router({ mergeParams: true });
 const { catchError } = require('../../utils');
+const {
+  OK,
+  NOT_FOUND,
+  NO_CONTENT,
+  ReasonPhrases
+} = require('http-status-codes');
 const tasksService = require('./task.service');
-const { OK, NOT_FOUND, NO_CONTENT } = require('http-status-codes');
 
 router
   .route('/')
@@ -29,7 +34,7 @@ router
       if (task) {
         res.status(OK).json(task);
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Task ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -47,7 +52,7 @@ router
         );
         res.status(OK).json(task);
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Task ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   )
@@ -63,10 +68,10 @@ router
           req.params.id
         );
         if (taskRemoved) {
-          res.status(NO_CONTENT).send('Task was deleted');
+          res.status(NO_CONTENT).send('Task Was Deleted');
         }
       } else {
-        res.sendStatus(NOT_FOUND);
+        res.status(NOT_FOUND).send(`Task ${ReasonPhrases.NOT_FOUND}`);
       }
     })
   );
