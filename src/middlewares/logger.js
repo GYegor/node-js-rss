@@ -1,16 +1,6 @@
 const { createLogger, format, transports } = require('winston');
 const { finished } = require('stream');
 
-// https://github.com/winstonjs/winston/issues/1108
-const LEVEL = Symbol.for('level');
-const filterOnly = level => {
-  return format(info => {
-    if (info[LEVEL] === level) {
-      return info;
-    }
-  })();
-};
-
 const logger = createLogger({
   format: format.combine(
     format.timestamp({
@@ -24,8 +14,7 @@ const logger = createLogger({
     }),
     new transports.File({
       filename: 'log/app.log',
-      level: 'info',
-      format: filterOnly('info')
+      level: 'info'
     }),
     new transports.File({
       filename: 'log/error.log',
