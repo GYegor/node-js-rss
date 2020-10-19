@@ -1,48 +1,63 @@
 const router = require('express').Router();
+const { catchError } = require('../../utils');
+const {
+  OK,
+  NOT_FOUND,
+  NO_CONTENT,
+  ReasonPhrases
+} = require('http-status-codes');
 const boardsService = require('./board.service');
-
-router.param('id', (req, res, next, id) => {
-  req.id = id;
-  next();
-});
 
 router
   .route('/')
-  .get(async (req, res) => {
-    const boards = await boardsService.getAll();
-    res.json(boards);
-  })
-  .post(async (req, res) => {
-    const board = await boardsService.add(req.body);
-    res.json(board);
-  });
+  .get(
+    catchError(async (req, res) => {
+      const boards = await boardsService.getAll();
+      res.status(OK).json(boards);
+    })
+  )
+  .post(
+    catchError(async (req, res) => {
+      const board = await boardsService.create(req.body);
+      res.status(OK).json(board);
+    })
+  );
 
 router
   .route('/:id')
-  .get(async (req, res) => {
-    try {
-      const board = await boardsService.getById(req.id);
-      res.json(board);
-    } catch {
-      res.sendStatus(404);
-    }
-  })
-  .put(async (req, res) => {
-    try {
-      const updatedBoard = await boardsService.update(req.params.id, req.body);
-      res.json(updatedBoard);
-    } catch {
-      res.sendStatus(404);
-    }
-  })
-  .delete(async (req, res) => {
-    try {
-      await boardsService.remove(req.id);
-      await boardsService.clearBoardTasks(req.id);
-      res.sendStatus(204);
-    } catch {
-      res.sendStatus(404);
-    }
-  });
+  .get(
+    catchError(async (req, res) => {
+      const board = await boardsService.getById(req.params.id);
+      if (board) {
+        res.status(OK).json(board);
+      } else {
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
+      }
+    })
+  )
+  .put(
+    catchError(async (req, res) => {
+      const oldBoard = await boardsService.getById(req.params.id);
+      if (oldBoard) {
+        const board = await boardsService.update(req.params.id, req.body);
+        res.status(OK).json(board);
+      } else {
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
+      }
+    })
+  )
+  .delete(
+    catchError(async (req, res) => {
+      const boardToDelete = await boardsService.getById(req.params.id);
+      if (boardToDelete) {
+        const boardRemoved = await boardsService.remove(req.params.id);
+        if (boardRemoved) {
+          res.status(NO_CONTENT).send('Board Was Deleted');
+        }
+      } else {
+        res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
+      }
+    })
+  );
 
 module.exports = router;
