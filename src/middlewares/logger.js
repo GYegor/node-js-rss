@@ -1,37 +1,67 @@
 const { createLogger, format, transports } = require('winston');
+const { finished } = require('stream');
+
+// https://github.com/winstonjs/winston/issues/1108
+const LEVEL = Symbol.for('level');
+const filterOnly = level => {
+  return format(info => {
+    if (info[LEVEL] === level) {
+      return info;
+    }
+  })();
+};
 
 const logger = createLogger({
-  exitOnError: false,
-  level: 'silly',
-  format: format.combine(format.colorize(), format.cli()),
-  transport: [
-    new transports.Console(),
+  format: format.combine(
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }),
+    format.json()
+  ),
+  transports: [
+    new transports.Console({
+      format: format.combine(format.colorize(), format.cli())
+    }),
     new transports.File({
-      filename: '../log/pseudoTrello.log',
+      filename: 'log/app.log',
       level: 'info',
-      format: format.combine(format.uncolorize(), format.json())
+      format: filterOnly('info')
+    }),
+    new transports.File({
+      filename: 'log/error.log',
+      level: 'error'
     })
-  ],
-  exceptionHandlers: [
-    new transports.File({ filename: '../log/pseudoTrello.log' })
-  ],
-  rejectionHandlers: [
-    new transports.File({ filename: './log/pseudoTrello.log' })
   ]
 });
 
-logger.exceptions.handle(new transports.File({ filename: 'exceptions.log' }));
-// logger.silly('silly');
-// logger.debug('debug');
-// logger.verbose('verbose');
-logger.info('info');
-// logger.warn('warn');
-// logger.error('error');
+const requestResponseLogger = (req, res, next) => {
+  const { url, method, query, body } = req;
+  const start = Date.now();
+  logger.info(
+    `Req: ${method} URL: ${url}, query parameters: ${JSON.stringify(
+      query
+    )}, request body: ${JSON.stringify(body)}`
+  );
 
-logger.log('info', 'info');
-
-module.exports = (req, res, next) => {
-  logger.info(req.url);
-
+  // eslint-disable-next-line callback-return
   next();
+
+  finished(res, () => {
+    const { statusCode, statusMessage } = res;
+    const ms = Date.now() - start;
+    if (statusCode < 400) {
+      logger.info(
+        `Res: ${method} ${url} ${statusCode} ${statusMessage} [${ms}ms]`
+      );
+    } else {
+      logger.error(
+        `Res: ${method} ${url} ${statusCode} ${statusMessage}! [${ms}ms]`
+      );
+    }
+  });
+};
+
+module.exports = {
+  requestResponseLogger,
+  logger
 };
