@@ -26,7 +26,6 @@ const boardSchema = new Schema(
 
 boardSchema.statics.toResponse = board => {
   const { _id: id, title, columns } = board;
-
   return { id, title, columns };
 };
 
