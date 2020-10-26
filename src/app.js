@@ -42,8 +42,4 @@ process.on('uncaughtException', err => {
   process.exitCode = 1;
 });
 
-// Promise.reject(Error('Oops! UnhandledRejection!'));
-
-// throw Error('Oops! UncaughtException!');
-
 module.exports = app;

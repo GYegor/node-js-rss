@@ -7,19 +7,20 @@ const {
   ReasonPhrases
 } = require('http-status-codes');
 const tasksService = require('./task.service');
+const Task = require('./task.model');
 
 router
   .route('/')
   .get(
     catchError(async (req, res) => {
       const tasks = await tasksService.getAllAtBoard(req.params.boardId);
-      res.status(OK).json(tasks);
+      res.status(OK).json(tasks.map(Task.toResponse));
     })
   )
   .post(
     catchError(async (req, res) => {
       const task = await tasksService.addToBoard(req.params.boardId, req.body);
-      res.status(OK).json(task);
+      res.status(OK).json(Task.toResponse(task));
     })
   );
 
@@ -32,7 +33,7 @@ router
         req.params.id
       );
       if (task) {
-        res.status(OK).json(task);
+        res.status(OK).json(Task.toResponse(task));
       } else {
         res.status(NOT_FOUND).send(`Task ${ReasonPhrases.NOT_FOUND}`);
       }
@@ -50,7 +51,7 @@ router
           req.params.id,
           req.body
         );
-        res.status(OK).json(task);
+        res.status(OK).json(Task.toResponse(task));
       } else {
         res.status(NOT_FOUND).send(`Task ${ReasonPhrases.NOT_FOUND}`);
       }
