@@ -7,19 +7,20 @@ const {
   ReasonPhrases
 } = require('http-status-codes');
 const boardsService = require('./board.service');
+const Board = require('./board.model');
 
 router
   .route('/')
   .get(
     catchError(async (req, res) => {
       const boards = await boardsService.getAll();
-      res.status(OK).json(boards);
+      res.status(OK).json(boards.map(Board.toResponse));
     })
   )
   .post(
     catchError(async (req, res) => {
       const board = await boardsService.create(req.body);
-      res.status(OK).json(board);
+      res.status(OK).json(Board.toResponse(board));
     })
   );
 
@@ -28,8 +29,9 @@ router
   .get(
     catchError(async (req, res) => {
       const board = await boardsService.getById(req.params.id);
+
       if (board) {
-        res.status(OK).json(board);
+        res.status(OK).json(Board.toResponse(board));
       } else {
         res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
       }
@@ -40,7 +42,7 @@ router
       const oldBoard = await boardsService.getById(req.params.id);
       if (oldBoard) {
         const board = await boardsService.update(req.params.id, req.body);
-        res.status(OK).json(board);
+        res.status(OK).json(Board.toResponse(board));
       } else {
         res.status(NOT_FOUND).send(`Board ${ReasonPhrases.NOT_FOUND}`);
       }
