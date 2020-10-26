@@ -17,7 +17,7 @@ const userSchema = new Schema(
 );
 
 userSchema.statics.toResponse = user => {
-  const { id, name, login } = user;
+  const { _id: id, name, login } = user;
   return { id, name, login };
 };
 

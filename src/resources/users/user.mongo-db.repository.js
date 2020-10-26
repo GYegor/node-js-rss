@@ -8,6 +8,6 @@ const create = async body => User.create(body);
 
 const update = async (id, body) => User.updateOne({ _id: id }, body);
 
-const remove = async id => User.deleteOne({ _id: id });
+const remove = async id => (await User.deleteOne({ _id: id })).ok;
 
 module.exports = { getAll, getById, create, update, remove };
