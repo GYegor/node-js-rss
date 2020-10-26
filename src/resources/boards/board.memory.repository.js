@@ -1,4 +1,4 @@
-const DB = require('../../db/inMemoryDB');
+const DB = require('../../db/in-memory.db');
 const Board = require('./board.model');
 
 const getAll = async () => {
