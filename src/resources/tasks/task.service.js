@@ -1,4 +1,4 @@
-const tasksRepo = require('./task.memory.repository');
+const tasksRepo = require('./task.mongo-db.repository');
 
 const getAllAtBoard = boardId => tasksRepo.getAllAtBoard(boardId);
 const getByIdAtBoard = (boardId, id) => tasksRepo.getByIdAtBoard(boardId, id);
