@@ -10,5 +10,6 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV,
   MONGO_CONNECTION_STRING: process.env.MONGO_CONNECTION_STRING,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+  DEFAULT_SALT_ROUNDS: process.env.DEFAULT_SALT_ROUNDS,
   AUTH_MODE: process.env.AUTH_MODE === 'true'
 };
