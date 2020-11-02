@@ -3,6 +3,7 @@ const tasksService = require('../tasks/task.service');
 
 const getAll = () => usersRepo.getAll();
 const getById = id => usersRepo.getById(id);
+const getByCreds = userCreds => usersRepo.getByCreds(userCreds);
 const create = reqBody => usersRepo.create(reqBody);
 const update = (id, reqBody) => usersRepo.update(id, reqBody);
 const remove = async id => {
@@ -13,6 +14,7 @@ const remove = async id => {
 module.exports = {
   getAll,
   getById,
+  getByCreds,
   create,
   update,
   remove
