@@ -16,11 +16,11 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 app.use(express.json());
 
-app.use(tokenChecker);
-
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use(requestResponseLogger);
+
+app.use(tokenChecker);
 
 app.use('/', (req, res, next) => {
   if (req.originalUrl === '/') {
